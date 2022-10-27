@@ -7,6 +7,8 @@ class DependNode(object):
     def __init__(self, name):
         self._name = name
 
+        self._attributes = []
+
     @property
     def name(self):
         return self._name
@@ -18,6 +20,7 @@ class DependNode(object):
                                                                                                           type(value)))
         if cmds.objExists(self._name):
             cmds.rename(self._name, value)
+
         self._name = value
 
     def create(self):
@@ -29,7 +32,12 @@ class DependNode(object):
         else:
             cmds.warning(
                 "A {0} node Called {1} already Exists. Creation skipped".format(self._maya_type, self._name))
+        for attr in self._attributes:
+            attr.restore()
 
     def delete(self):
         if cmds.objExists(self._name):
             cmds.delete(self._name)
+
+        for attr in self._attributes:
+            attr.store()
