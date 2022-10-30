@@ -2,6 +2,7 @@ from maya import cmds
 
 
 class DependNode(object):
+
     _maya_type = None
 
     def __init__(self, name):
@@ -30,8 +31,8 @@ class DependNode(object):
         if not cmds.objExists(self._name):
             cmds.createNode(self._maya_type, n=self._name)
         else:
-            cmds.warning(
-                "A {0} node Called {1} already Exists. Creation skipped".format(self._maya_type, self._name))
+            cmds.warning("A {0} node Called {1} already Exists. Creation skipped".format(self._maya_type,
+                                                                                         self._name))
         for attr in self._attributes:
             attr.restore()
 

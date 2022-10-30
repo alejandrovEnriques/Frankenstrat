@@ -3,12 +3,10 @@ from maya import cmds
 
 class PlugData(object):
 
-    def __init__(self, node, attribute, value=None, source=None, writable=True):
+    def __init__(self, node, attribute, plugs):
         self._node = node
         self._attribute = attribute
-        self._value = value
-        self._source = source
-        self._writable = writable
+        self._plugs = plugs
 
     @property
     def node(self):
@@ -28,12 +26,7 @@ class PlugData(object):
 
     @property
     def value(self):
-        if self._source:
-            return self._source.value
-
-        if cmds.objExists(self._node):
-            self._value = cmds.getAttr("{0}.{1}".format(self._node, self._attribute))
-        return self._value
+        return [plug.value for plug in self._plugs]
 
     @value.setter
     def value(self, the_value):
@@ -64,7 +57,7 @@ class PlugData(object):
         self._source = value
 
     def restore(self):
-        self.value = self._value
+        self.source = self._value
 
     def store(self):
         self._value = self.value

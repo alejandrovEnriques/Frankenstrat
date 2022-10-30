@@ -1,4 +1,3 @@
-from maya import cmds
 import importlib
 
 from Frankenstrat.nodes import depend_node
@@ -9,6 +8,7 @@ importlib.reload(plugdata)
 
 
 class Reverse(depend_node.DependNode):
+
     _maya_type = "reverse"
 
     def __init__(self, name):
@@ -22,12 +22,8 @@ class Reverse(depend_node.DependNode):
         self._outputY = plugdata.PlugData(self._name, "outputY", 0, writable=False)
         self._outputZ = plugdata.PlugData(self._name, "outputZ", 0, writable=False)
 
-        self._attributes = [self._inputX,
-                            self._inputY,
-                            self._inputZ,
-                            self._outputX,
-                            self._outputY,
-                            self._outputZ]
+        self._attributes = [self._inputX, self._inputY, self._inputZ,
+                            self._outputX, self._outputY, self._outputZ]
 
     @property
     def inputX(self):
