@@ -33,19 +33,20 @@ class PlugData(object):
 
         if cmds.objExists(self._node):
             self._value = cmds.getAttr("{0}.{1}".format(self._node, self._attribute))
+
         return self._value
 
     @value.setter
     def value(self, the_value):
+
         if not self._writable:
-            raise RuntimeError("The plug cannot be set because it is read-only")
+            raise RuntimeError("The plug cannot be set because it is read-only.")
 
         if self._source:
-            raise RuntimeError(
-                "The plug has an incoming connection from {0}.{1}".format(self._source.node, self._source.attribute))
-
+            raise RuntimeError("The plug has an incoming connection from {0}.{1}".format(self._source.node,
+                                                                                         self._source.attribute))
         if cmds.objExists(self._node):
-            cmds.setAttr("{0}.{1}".format(self._node, self._attribute), the_value)
+            self._value = cmds.setAttr("{0}.{1}".format(self._node, self._attribute), the_value)
 
         self._value = the_value
 
@@ -64,7 +65,9 @@ class PlugData(object):
         self._source = value
 
     def restore(self):
-        self.value = self._value
+        self._source = None
+        if self._writable:
+            self.value = self._value
 
     def store(self):
         self._value = self.value

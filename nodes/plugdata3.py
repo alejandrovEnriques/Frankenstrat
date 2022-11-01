@@ -1,7 +1,7 @@
 from maya import cmds
 
 
-class PlugData(object):
+class PlugData3(object):
 
     def __init__(self, node, attribute, plugs):
         self._node = node
@@ -30,34 +30,21 @@ class PlugData(object):
 
     @value.setter
     def value(self, the_value):
-        if not self._writable:
-            raise RuntimeError("The plug cannot be set because it is read-only")
-
-        if self._source:
-            raise RuntimeError(
-                "The plug has an incoming connection from {0}.{1}".format(self._source.node, self._source.attribute))
-
-        if cmds.objExists(self._node):
-            cmds.setAttr("{0}.{1}".format(self._node, self._attribute), the_value)
-
-        self._value = the_value
+        for plug, value in zip(self._plugs, the_value):
+            plug.value = value
 
     @property
     def source(self):
-        return self._source
+        return [plug.source for plug in self._plugs]
 
     @source.setter
-    def source(self, value):
-        if value is None:
-            cmds.disconnectAttr("{0}.{1}".format(self._source.node, self._source.attribute),
-                                "{0}.{1}".format(self._node, self._attribute))
-        else:
-            cmds.connectAttr("{0}.{1}".format(value.node, value.attribute),
-                             "{0}.{1}".format(self._node, self._attribute))
-        self._source = value
+    def source(self, values):
+        for plug, value in zip(self._plugs, values):
+            plug.value = value
 
     def restore(self):
-        self.source = self._value
+        self._source = None
+        self.value = self._value
 
     def store(self):
         self._value = self.value

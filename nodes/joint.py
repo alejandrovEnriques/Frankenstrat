@@ -1,12 +1,13 @@
-from maya import cmds
 import importlib
+from maya import cmds
 
 from Frankenstrat.nodes import depend_node
 from Frankenstrat.nodes import plugdata
+from Frankenstrat.nodes import plugdata3
 
 importlib.reload(depend_node)
 importlib.reload(plugdata)
-
+importlib.reload(plugdata3)
 
 class Joint(depend_node.DependNode):
     _maya_type = "joint"
