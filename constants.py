@@ -1,5 +1,7 @@
 GROUP = "grp"
 JOINT = "jnt"
+GUIDE = "gde"
+
 LEFT = "Lf"
 RIGHT = "Rt"
 CENTER = "Ct"
