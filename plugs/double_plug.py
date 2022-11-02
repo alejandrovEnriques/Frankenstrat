@@ -1,7 +1,7 @@
 from maya import cmds
 
 
-class PlugData(object):
+class Double(object):
 
     def __init__(self, node, attribute, value=None, source=None, writable=True):
         self._node = node

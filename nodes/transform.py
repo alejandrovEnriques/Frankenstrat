@@ -2,12 +2,12 @@ import importlib
 from maya import cmds
 
 from Frankenstrat.nodes import depend_node
-from Frankenstrat.nodes import plugdata
-from Frankenstrat.nodes import plugdata3
+from Frankenstrat.plugs import double_plug, double3_plug, bool_plug
 
 importlib.reload(depend_node)
-importlib.reload(plugdata)
-importlib.reload(plugdata3)
+importlib.reload(double_plug)
+importlib.reload(double3_plug)
+importlib.reload(bool_plug)
 
 
 class Transform(depend_node.DependNode):
@@ -18,25 +18,26 @@ class Transform(depend_node.DependNode):
 
         self._parent = parent
 
-        self._translateX = plugdata.PlugData(self._name, "translateX", 0)
-        self._translateY = plugdata.PlugData(self._name, "translateY", 0)
-        self._translateZ = plugdata.PlugData(self._name, "translateZ", 0)
-        self._translate = plugdata3.PlugData3(self.name, "translate",
-                                              [self._translateX, self._translateY, self._translateZ])
+        self._translateX = double_plug.Double(self._name, "translateX", 0)
+        self._translateY = double_plug.Double(self._name, "translateY", 0)
+        self._translateZ = double_plug.Double(self._name, "translateZ", 0)
+        self._translate = double3_plug.Double3(self.name, "translate",
+                                               [self._translateX, self._translateY, self._translateZ])
 
-        self._rotateX = plugdata.PlugData(self._name, "rotateX", 0)
-        self._rotateY = plugdata.PlugData(self._name, "rotateY", 0)
-        self._rotateZ = plugdata.PlugData(self._name, "rotateZ", 0)
-        self._rotate = plugdata3.PlugData3(self.name, "rotate",
-                                           [self._rotateX, self._rotateY, self._rotateZ])
+        self._rotateX = double_plug.Double(self._name, "rotateX", 0)
+        self._rotateY = double_plug.Double(self._name, "rotateY", 0)
+        self._rotateZ = double_plug.Double(self._name, "rotateZ", 0)
+        self._rotate = double3_plug.Double3(self.name, "rotate",
+                                            [self._rotateX, self._rotateY, self._rotateZ])
 
-        self._scaleX = plugdata.PlugData(self._name, "scaleX", 0)
-        self._scaleY = plugdata.PlugData(self._name, "scaleY", 0)
-        self._scaleZ = plugdata.PlugData(self._name, "scaleZ", 0)
-        self._scale = plugdata3.PlugData3(self.name, "scale",
-                                          [self._scaleX, self._scaleY, self._scaleZ])
+        self._scaleX = double_plug.Double(self._name, "scaleX", 1)
+        self._scaleY = double_plug.Double(self._name, "scaleY", 1)
+        self._scaleZ = double_plug.Double(self._name, "scaleZ", 1)
+        self._scale = double3_plug.Double3(self.name, "scale",
+                                           [self._scaleX, self._scaleY, self._scaleZ])
 
-        self._visibility = plugdata.PlugData(self._name, "visibility", 0)
+        self._visibility = double_plug.Double(self._name, "visibility", 1)
+        self._inheritsTransform = bool_plug.Bool(self.name, "inheritsTransform", 1)
 
         self._attributes = [self._translateX,
                             self._translateY,
@@ -47,7 +48,8 @@ class Transform(depend_node.DependNode):
                             self._scaleX,
                             self._scaleY,
                             self._scaleZ,
-                            self._visibility]
+                            self._visibility,
+                            self._inheritsTransform]
 
     @property
     def parent(self):
@@ -95,6 +97,7 @@ class Transform(depend_node.DependNode):
     @property
     def rotate(self):
         return self._rotate
+
     @property
     def rotateX(self):
         return self._rotateX
@@ -126,3 +129,7 @@ class Transform(depend_node.DependNode):
     @property
     def visibility(self):
         return self._visibility
+
+    @property
+    def inheritsTransform(self):
+        return self._inheritsTransform

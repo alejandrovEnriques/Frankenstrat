@@ -1,12 +1,11 @@
 import importlib
 
 from Frankenstrat.nodes import depend_node
-from Frankenstrat.nodes import plugdata
-from Frankenstrat.nodes import plugdata3
+from Frankenstrat.plugs import double_plug, double3_plug
 
 importlib.reload(depend_node)
-importlib.reload(plugdata)
-importlib.reload(plugdata3)
+importlib.reload(double_plug)
+importlib.reload(double3_plug)
 
 
 class MultiplyDivide(depend_node.DependNode):
@@ -15,25 +14,25 @@ class MultiplyDivide(depend_node.DependNode):
     def __init__(self, name):
         super(MultiplyDivide, self).__init__(name)
 
-        self._input1X = plugdata.PlugData(self._name, "input1X", 0)
-        self._input1Y = plugdata.PlugData(self._name, "input1Y", 0)
-        self._input1Z = plugdata.PlugData(self._name, "input1Z", 0)
-        self._input1 = plugdata3.PlugData3(self.name, "input1",
-                                           [self._input1X, self._input1Y, self._input1Z])
+        self._input1X = double_plug.Double(self._name, "input1X", 0)
+        self._input1Y = double_plug.Double(self._name, "input1Y", 0)
+        self._input1Z = double_plug.Double(self._name, "input1Z", 0)
+        self._input1 = double3_plug.Double3(self.name, "input1",
+                                            [self._input1X, self._input1Y, self._input1Z])
 
-        self._input2X = plugdata.PlugData(self._name, "input2X", 0)
-        self._input2Y = plugdata.PlugData(self._name, "input2Y", 0)
-        self._input2Z = plugdata.PlugData(self._name, "input2Z", 0)
-        self._input2 = plugdata3.PlugData3(self.name, "input2",
-                                           [self._input2X, self._input2Y, self._input2Z])
+        self._input2X = double_plug.Double(self._name, "input2X", 0)
+        self._input2Y = double_plug.Double(self._name, "input2Y", 0)
+        self._input2Z = double_plug.Double(self._name, "input2Z", 0)
+        self._input2 = double3_plug.Double3(self.name, "input2",
+                                            [self._input2X, self._input2Y, self._input2Z])
 
-        self._operation = plugdata.PlugData(self._name, "operation", 0)
+        self._operation = double_plug.Double(self._name, "operation", 0)
 
-        self._outputX = plugdata.PlugData(self._name, "outputX", 0, writable=False)
-        self._outputY = plugdata.PlugData(self._name, "outputY", 0, writable=False)
-        self._outputZ = plugdata.PlugData(self._name, "outputZ", 0, writable=False)
-        self._output = plugdata3.PlugData3(self.name, "output",
-                                           [self._outputX, self._outputY, self._outputZ])
+        self._outputX = double_plug.Double(self._name, "outputX", 0, writable=False)
+        self._outputY = double_plug.Double(self._name, "outputY", 0, writable=False)
+        self._outputZ = double_plug.Double(self._name, "outputZ", 0, writable=False)
+        self._output = double3_plug.Double3(self.name, "output",
+                                            [self._outputX, self._outputY, self._outputZ])
 
         self._attributes = [self._input1X,
                             self._input1Y,

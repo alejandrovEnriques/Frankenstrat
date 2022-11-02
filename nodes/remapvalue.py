@@ -1,12 +1,11 @@
 import importlib
 
 from Frankenstrat.nodes import depend_node
-from Frankenstrat.nodes import plugdata
-from Frankenstrat.nodes import plugdata3
+from Frankenstrat.plugs import double_plug, double3_plug
 
 importlib.reload(depend_node)
-importlib.reload(plugdata)
-importlib.reload(plugdata3)
+importlib.reload(double_plug)
+importlib.reload(double3_plug)
 
 
 class RemapValue(depend_node.DependNode):
@@ -15,20 +14,20 @@ class RemapValue(depend_node.DependNode):
     def __init__(self, name):
         super(RemapValue, self).__init__(name)
 
-        self._inputMax = plugdata.PlugData(self._name, "inputMax", 0)
-        self._inputMin = plugdata.PlugData(self._name, "inputMin", 0)
-        self._inputValue = plugdata.PlugData(self._name, "inputValue", 0)
-        self._outputMax = plugdata.PlugData(self._name, "outputMax", 0)
-        self._outputMin = plugdata.PlugData(self._name, "outputMin", 0)
+        self._inputMax = double_plug.Double(self._name, "inputMax", 0)
+        self._inputMin = double_plug.Double(self._name, "inputMin", 0)
+        self._inputValue = double_plug.Double(self._name, "inputValue", 0)
+        self._outputMax = double_plug.Double(self._name, "outputMax", 0)
+        self._outputMin = double_plug.Double(self._name, "outputMin", 0)
 
-        self._outValue = plugdata.PlugData(self._name, "outValue", 0, writable=False)
+        self._outValue = double_plug.Double(self._name, "outValue", 0, writable=False)
 
-        self._outColorR = plugdata.PlugData(self._name, "outColorR", 0, writable=False)
-        self._outColorG = plugdata.PlugData(self._name, "outColorG", 0, writable=False)
-        self._outColorB = plugdata.PlugData(self._name, "outColorB", 0, writable=False)
+        self._outColorR = double_plug.Double(self._name, "outColorR", 0, writable=False)
+        self._outColorG = double_plug.Double(self._name, "outColorG", 0, writable=False)
+        self._outColorB = double_plug.Double(self._name, "outColorB", 0, writable=False)
 
-        self._outColor = plugdata3.PlugData3(self.name, "outColor",
-                                             [self._outColorR, self._outColorG, self._outColorB])
+        self._outColor = double3_plug.Double3(self.name, "outColor",
+                                              [self._outColorR, self._outColorG, self._outColorB])
 
         self._attributes = [self._inputMax,
                             self._inputMin,
