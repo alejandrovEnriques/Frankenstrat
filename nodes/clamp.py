@@ -3,10 +3,6 @@ import importlib
 from Frankenstrat.nodes import depend_node
 from Frankenstrat.plugs import double_plug, double3_plug
 
-importlib.reload(depend_node)
-importlib.reload(double_plug)
-importlib.reload(double3_plug)
-
 
 class Clamp(depend_node.DependNode):
     _maya_type = "clamp"

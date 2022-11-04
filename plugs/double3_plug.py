@@ -1,4 +1,3 @@
-from maya import cmds
 
 
 class Double3(object):

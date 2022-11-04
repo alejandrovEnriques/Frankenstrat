@@ -3,11 +3,8 @@ import importlib
 from Frankenstrat.nodes import transform
 from Frankenstrat import constants
 
-importlib.reload(transform)
 importlib.reload(constants)
-
-
-class Base_Part(object):
+class BasePart:
 
     def __init__(self, name, side=None, parent=None):
         self._name = name

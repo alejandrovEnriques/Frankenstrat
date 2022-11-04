@@ -7,10 +7,10 @@ if new_path not in sys.path:
     sys.path.append(new_path)
 
 
-from Frankenstrat.systems import guides
+from Frankenstrat.rig_parts import finger
 
-importlib.reload(guides)
+importlib.reload(finger)
 
-s = guides.Guide("MyFing00", "Lf", None)
+s = finger.Finger("MyFing00", "Lf", None)
 s.create()
 

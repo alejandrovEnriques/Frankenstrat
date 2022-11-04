@@ -4,11 +4,6 @@ from maya import cmds
 from Frankenstrat.nodes import depend_node
 from Frankenstrat.plugs import double_plug, double3_plug, bool_plug
 
-importlib.reload(depend_node)
-importlib.reload(double_plug)
-importlib.reload(double3_plug)
-importlib.reload(bool_plug)
-
 
 class Transform(depend_node.DependNode):
     _maya_type = "transform"
@@ -37,7 +32,8 @@ class Transform(depend_node.DependNode):
                                            [self._scaleX, self._scaleY, self._scaleZ])
 
         self._visibility = double_plug.Double(self._name, "visibility", 1)
-        self._inheritsTransform = bool_plug.Bool(self.name, "inheritsTransform", 1)
+        self._inheritsTransform = bool_plug.Bool(self.name, "inheritsTransform", True)
+        self._displayLocalAxis = bool_plug.Bool(self.name, "displayLocalAxis", False)
 
         self._attributes = [self._translateX,
                             self._translateY,
@@ -49,7 +45,8 @@ class Transform(depend_node.DependNode):
                             self._scaleY,
                             self._scaleZ,
                             self._visibility,
-                            self._inheritsTransform]
+                            self._inheritsTransform,
+                            self._displayLocalAxis]
 
     @property
     def parent(self):
@@ -133,3 +130,11 @@ class Transform(depend_node.DependNode):
     @property
     def inheritsTransform(self):
         return self._inheritsTransform
+
+    @property
+    def displayLocalAxis(self):
+        return self._displayLocalAxis
+
+    def snap_to(self, target):
+        matrix = cmds.xform(target.name, q=True, m=True, ws=True)
+        cmds.xform(self._name, m=matrix, ws=True)
