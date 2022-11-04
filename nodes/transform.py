@@ -34,6 +34,7 @@ class Transform(depend_node.DependNode):
         self._visibility = double_plug.Double(self._name, "visibility", 1)
         self._inheritsTransform = bool_plug.Bool(self.name, "inheritsTransform", True)
         self._displayLocalAxis = bool_plug.Bool(self.name, "displayLocalAxis", False)
+        
 
         self._attributes = [self._translateX,
                             self._translateY,
