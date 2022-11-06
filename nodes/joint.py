@@ -2,7 +2,6 @@ import importlib
 
 from maya import cmds
 
-from Frankenstrat.nodes import depend_node
 from Frankenstrat.nodes import transform
 from Frankenstrat.plugs import double_plug, double3_plug
 
@@ -44,8 +43,10 @@ class Joint(transform.Transform):
 
     def rot_to_orient(self):
         world_rot = cmds.xform(self._name, q=True, ro=True, ws=True)
-        cmds.xform(self._name, ro=[0, 0, 0], ws=False)
-        self._jointOrient.value = world_rot
+        self._jointOrient.value = [0, 0, 0]
+        cmds.xform(self._name, ro=world_rot, ws=True)
+        self._jointOrient.value = self._rotate.value
+        self._rotate.value = [0, 0, 0]
 
     def orient_to_rot(self):
         world_rot = cmds.xform(self._name, q=True, ro=True, ws=True)

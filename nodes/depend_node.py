@@ -1,7 +1,7 @@
 from maya import cmds
 
 
-class DependNode(object):
+class DependNode:
     _maya_type = None
 
     def __init__(self, name):

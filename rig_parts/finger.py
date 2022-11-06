@@ -3,8 +3,10 @@ from maya import cmds
 
 from Frankenstrat.rig_parts import basepart
 from Frankenstrat.nodes import joint
-from Frankenstrat.systems import guides
+from Frankenstrat.systems import guides, chain
 from Frankenstrat import constants
+
+importlib.reload(constants)
 
 
 class Finger(basepart.BasePart):
@@ -29,17 +31,25 @@ class Finger(basepart.BasePart):
         self._jointD.translateX.value = 15
         self._jointE.translateX.value = 20
 
+        self._masterguide = guides.Guide(constants.get_name(self._name, constants.GUIDE, constants.MASTER, self._side),
+                                         self._guides_group)
+
+        self._masterguide.color(constants.RED)
+
         self._joints = [self._jointA, self._jointB, self._jointC, self._jointD, self._jointE]
         self._guides = []
-        tmp_parent = self._guides_group
+        tmp_parent = self._masterguide
         for jnt in self._joints:
             gde = guides.Guide(jnt.name.replace(constants.JOINT, constants.GUIDE))
 
             gde.offset.parent = tmp_parent
+            gde.color(constants.YELLOW)
             self._guides.append(gde)
             tmp_parent = gde
 
         self._constraints = []
+
+        self._chain = chain.FKChain(self._name, self._side, self._rig_group, self._joints, constants.BLU)
 
     def create(self):
         super(Finger, self).create()
@@ -50,13 +60,14 @@ class Finger(basepart.BasePart):
         self._jointD.create()
         self._jointE.create()
 
-        for gde in self._guides:
-            gde.create()
-
     def setup(self):
+        self._chain.delete()
+
+        self._masterguide.create()
 
         previous_jnt = None
         for gde, jnt in zip(self._guides, self._joints):
+            gde.create()
             jnt.displayLocalAxis.value = True
 
             gde.snap_to(jnt)
@@ -74,10 +85,12 @@ class Finger(basepart.BasePart):
         for cnt in self._constraints:
             cmds.delete(cnt)
         self._constraints = []
-        self._guides_group.visibility.value = False
+        self._masterguide.delete()
 
         for jnt in self._joints:
             jnt.rot_to_orient()
+
+        self._chain.create()
 
     def guides_independent(self, independent=False):
         tmp_parent = self._guides_group

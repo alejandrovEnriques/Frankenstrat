@@ -1,10 +1,25 @@
 GROUP = "grp"
+GUIDEGROUP = "grpGuide"
 JOINT = "jnt"
 GUIDE = "gde"
+CONTROL = "ctl"
+MASTER = "Master"
 
 LEFT = "Lf"
 RIGHT = "Rt"
 CENTER = "Ct"
+
+
+#TAGS
+FK = "Fk"
+IK = "Ik"
+
+# Colors
+RED = 13
+BLU = 14
+GREEN = 14
+YELLOW = 17
+
 
 
 def get_name(name, prefix, tag=None, side=None, index=None):

@@ -1,7 +1,7 @@
 from maya import cmds
 
 
-class Bool(object):
+class Bool:
 
     def __init__(self, node, attribute, value=None, source=None, writable=True):
         self._node = node

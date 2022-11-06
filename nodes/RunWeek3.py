@@ -14,3 +14,5 @@ importlib.reload(finger)
 s = finger.Finger("MyFing00", "Lf", None)
 s.create()
 
+s.setup()
+s.build()

@@ -22,3 +22,6 @@ class Locator(transform.Transform):
         for attr in self._attributes:
             attr.restore()
         self.parent = self._parent
+
+        if self._color:
+            self.color(self._color)

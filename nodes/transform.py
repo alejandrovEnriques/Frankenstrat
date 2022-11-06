@@ -12,6 +12,7 @@ class Transform(depend_node.DependNode):
         super(Transform, self).__init__(name)
 
         self._parent = parent
+        self._color = None
 
         self._translateX = double_plug.Double(self._name, "translateX", 0)
         self._translateY = double_plug.Double(self._name, "translateY", 0)
@@ -34,7 +35,6 @@ class Transform(depend_node.DependNode):
         self._visibility = double_plug.Double(self._name, "visibility", 1)
         self._inheritsTransform = bool_plug.Bool(self.name, "inheritsTransform", True)
         self._displayLocalAxis = bool_plug.Bool(self.name, "displayLocalAxis", False)
-        
 
         self._attributes = [self._translateX,
                             self._translateY,
@@ -75,6 +75,8 @@ class Transform(depend_node.DependNode):
     def create(self):
         super(Transform, self).create()
         self.parent = self._parent
+        if self._color:
+            self.color(self._color)
 
     @property
     def translate(self):
@@ -139,3 +141,10 @@ class Transform(depend_node.DependNode):
     def snap_to(self, target):
         matrix = cmds.xform(target.name, q=True, m=True, ws=True)
         cmds.xform(self._name, m=matrix, ws=True)
+
+    def color(self, value):
+        self._color = value
+        if cmds.objExists(self._name):
+
+            cmds.setAttr("{0}.overrideEnabled".format(self.name), True)
+            cmds.setAttr("{0}.overrideColor".format(self.name), value)
