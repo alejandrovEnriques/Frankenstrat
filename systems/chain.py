@@ -4,7 +4,7 @@ from Frankenstrat import constants
 from Frankenstrat.nodes import transform
 from Frankenstrat.systems import control
 
-importlib.reload(constants)
+importlib.reload(control)
 
 
 class FKChain:

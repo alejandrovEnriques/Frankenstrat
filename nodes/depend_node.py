@@ -9,6 +9,8 @@ class DependNode:
 
         self._attributes = []
 
+        self._custom_attributes = []
+
     @property
     def name(self):
         return self._name
@@ -40,3 +42,15 @@ class DependNode:
 
         for attr in self._attributes:
             attr.store()
+
+    def get_custom_attribute(self, attribute_name):
+        for attribute in self._custom_attributes:
+            if attribute.name == attribute_name:
+                return attribute
+
+    def add_attribute(self, attribute):
+        attribute.create()
+        self._custom_attributes.append(attribute)
+        if hasattr(attribute, "children"):
+            for plug in attribute.children:
+                self._custom_attributes.append(plug)

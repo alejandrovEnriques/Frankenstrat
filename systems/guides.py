@@ -6,6 +6,7 @@ from Frankenstrat.nodes import transform
 
 importlib.reload(locator)
 
+
 class Guide(locator.Locator):
 
     def __init__(self, name, parent=None):
@@ -16,11 +17,10 @@ class Guide(locator.Locator):
     def create(self):
         self._offset.create()
         super(Guide, self).create()
-    
+
     def delete(self):
         super(Guide, self).delete()
         self._offset.delete()
-
 
     @property
     def offset(self):

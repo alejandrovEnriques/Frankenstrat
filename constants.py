@@ -4,13 +4,18 @@ JOINT = "jnt"
 GUIDE = "gde"
 CONTROL = "ctl"
 MASTER = "Master"
+UPOBJECT = "UpObj"
+CHOICE = "chd"
+AIM = "Aim"
+DECOMPOSEMATRIX = "dcm"
+PLUSMINUSAVERAGE = "pma"
+VECTORPRODUCT = "vpd"
 
 LEFT = "Lf"
 RIGHT = "Rt"
 CENTER = "Ct"
 
-
-#TAGS
+# TAGS
 FK = "Fk"
 IK = "Ik"
 
@@ -19,7 +24,6 @@ RED = 13
 BLU = 14
 GREEN = 14
 YELLOW = 17
-
 
 
 def get_name(name, prefix, tag=None, side=None, index=None):

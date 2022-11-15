@@ -5,6 +5,7 @@ from Frankenstrat import constants
 
 importlib.reload(constants)
 
+
 class BasePart:
 
     def __init__(self, name, side=None, parent=None):
@@ -34,7 +35,6 @@ class BasePart:
                                                  self._group)
 
     def create(self):
-
         if self._created:
             raise RuntimeError("Part already created")
 
