@@ -1,11 +1,11 @@
 from maya import cmds
 
 
-class Bool(object):
+class Bool:
 
-    def __init__(self, node, attribute, value=None, source=None, writable=True):
+    def __init__(self, node, name, value=None, source=None, writable=True):
         self._node = node
-        self._attribute = attribute
+        self._name = name
         self._value = value
         self._source = source
         self._writable = writable
@@ -19,12 +19,12 @@ class Bool(object):
         self._node = value
 
     @property
-    def attribute(self):
-        return self._attribute
+    def rename(self):
+        return self._name
 
-    @attribute.setter
-    def attribute(self, value):
-        self._attribute = value
+    @rename.setter
+    def rename(self, value):
+        self._name = value
 
     @property
     def value(self):
@@ -32,7 +32,7 @@ class Bool(object):
             return self._source.value
 
         if cmds.objExists(self._node):
-            self._value = cmds.getAttr("{0}.{1}".format(self._node, self._attribute))
+            self._value = cmds.getAttr("{0}.{1}".format(self._node, self._name))
 
         return self._value
 
@@ -46,7 +46,7 @@ class Bool(object):
             raise RuntimeError("The plug has an incoming connection from {0}.{1}".format(self._source.node,
                                                                                          self._source.attribute))
         if cmds.objExists(self._node):
-            self._value = cmds.setAttr("{0}.{1}".format(self._node, self._attribute), the_value)
+            self._value = cmds.setAttr("{0}.{1}".format(self._node, self._name), the_value)
 
         self._value = the_value
 
@@ -58,10 +58,10 @@ class Bool(object):
     def source(self, value):
         if value is None:
             cmds.disconnectAttr("{0}.{1}".format(self._source.node, self._source.attribute),
-                                "{0}.{1}".format(self._node, self._attribute))
+                                "{0}.{1}".format(self._node, self._name))
         else:
             cmds.connectAttr("{0}.{1}".format(value.node, value.attribute),
-                             "{0}.{1}".format(self._node, self._attribute))
+                             "{0}.{1}".format(self._node, self._name))
         self._source = value
 
     def restore(self):

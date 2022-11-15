@@ -1,13 +1,15 @@
 from maya import cmds
 
 
-class DependNode(object):
+class DependNode:
     _maya_type = None
 
     def __init__(self, name):
         self._name = name
 
         self._attributes = []
+
+        self._custom_attributes = []
 
     @property
     def name(self):
@@ -40,3 +42,15 @@ class DependNode(object):
 
         for attr in self._attributes:
             attr.store()
+
+    def get_custom_attribute(self, attribute_name):
+        for attribute in self._custom_attributes:
+            if attribute.name == attribute_name:
+                return attribute
+
+    def add_attribute(self, attribute):
+        attribute.create()
+        self._custom_attributes.append(attribute)
+        if hasattr(attribute, "children"):
+            for plug in attribute.children:
+                self._custom_attributes.append(plug)

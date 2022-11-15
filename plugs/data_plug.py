@@ -1,7 +1,7 @@
 from maya import cmds
 
 
-class Double(object):
+class Data(object):
 
     def __init__(self, node, name, value=None, source=None, writable=True):
         self._node = node
@@ -32,23 +32,17 @@ class Double(object):
             return self._source.value
 
         if cmds.objExists(self._node):
-            self._value = cmds.getAttr("{0}.{1}".format(self._node, self._name))
+            try:
+                self._value = cmds.getAttr("{0}.{1}".format(self._node, self._name))
+            except Exception as e:
+                print(e)
 
         return self._value
 
     @value.setter
     def value(self, the_value):
+        raise NotImplementedError
 
-        if not self._writable:
-            raise RuntimeError("The plug cannot be set because it is read-only.")
-
-        if self._source:
-            raise RuntimeError("The plug has an incoming connection from {0}.{1}".format(self._source.node,
-                                                                                         self._source.name))
-        if cmds.objExists(self._node):
-            self._value = cmds.setAttr("{0}.{1}".format(self._node, self._name), the_value)
-
-        self._value = the_value
 
     @property
     def source(self):
@@ -71,10 +65,3 @@ class Double(object):
 
     def store(self):
         self._value = self.value
-
-    def create(self, parent=None):
-        if not cmds.objExists("{0}.{1}".format(self._node, self._name)):
-            cmds.addAttr(self._node, at="double", ln=self._name, k=True, p=parent)
-        self.value = self._value
-
-

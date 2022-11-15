@@ -9,6 +9,7 @@ class Locator(transform.Transform):
 
     def __init__(self, name, parent=None):
         super(Locator, self).__init__(name, parent)
+        self._size = None
 
     def create(self):
         if self._maya_type is None:
@@ -22,3 +23,15 @@ class Locator(transform.Transform):
         for attr in self._attributes:
             attr.restore()
         self.parent = self._parent
+
+        if self._color:
+            self.color(self._color)
+
+        if self._size:
+            self.size(self._size)
+
+    def size(self, value):
+        self._size = value
+        if cmds.objExists(self.name):
+            shape = cmds.listRelatives(self._name, s=True, c=True)[0]
+            cmds.setAttr("{0}.localScale".format(shape), *value)

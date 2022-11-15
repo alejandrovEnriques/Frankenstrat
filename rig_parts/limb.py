@@ -2,18 +2,20 @@ import importlib
 from maya import cmds
 
 from Frankenstrat.rig_parts import basepart
-from Frankenstrat.nodes import joint, choice
+from Frankenstrat.nodes import joint, choice, decompose_matrix, plus_minus_average, vector_product
 from Frankenstrat.systems import guides, chain
 from Frankenstrat import constants
 from Frankenstrat.plugs import double_plug, double3_plug, enum_plug
 
-importlib.reload(choice)
+importlib.reload(vector_product)
+importlib.reload(constants)
+importlib.reload(plus_minus_average)
 
 
-class Finger(basepart.BasePart):
+class Limb(basepart.BasePart):
 
     def __init__(self, name, side, parent):
-        super(Finger, self).__init__(name, side, parent)
+        super(Limb, self).__init__(name, side, parent)
 
         self._jointA = joint.Joint(constants.get_name(self._name, constants.JOINT, None, self._side, 0),
                                    self._skeleton_group)
@@ -21,16 +23,10 @@ class Finger(basepart.BasePart):
                                    self._jointA)
         self._jointC = joint.Joint(constants.get_name(self._name, constants.JOINT, None, self._side, 2),
                                    self._jointB)
-        self._jointD = joint.Joint(constants.get_name(self._name, constants.JOINT, None, self._side, 3),
-                                   self._jointC)
-        self._jointE = joint.Joint(constants.get_name(self._name, constants.JOINT, None, self._side, 4),
-                                   self._jointD)
-        print("NERE")
+
         self._jointA.translateX.value = 0
-        self._jointB.translateX.value = 5
-        self._jointC.translateX.value = 10
-        self._jointD.translateX.value = 15
-        self._jointE.translateX.value = 20
+        self._jointB.translateX.value = 10
+        self._jointC.translateX.value = 20
 
         self._masterguide = guides.Guide(constants.get_name(self._name, constants.GUIDE, constants.MASTER, self._side),
                                          self._guides_group)
@@ -38,13 +34,7 @@ class Finger(basepart.BasePart):
         self._masterguide.color(constants.RED)
         self._masterguide.size([0, 3, 3])
 
-        self._upguide = guides.Guide(constants.get_name(self._name, constants.GUIDE, constants.UPOBJECT, self._side),
-                                     self._masterguide)
-
-        self._upguide.color(constants.RED)
-        self._upguide.translateY.value = 10
-
-        self._joints = [self._jointA, self._jointB, self._jointC, self._jointD, self._jointE]
+        self._joints = [self._jointA, self._jointB, self._jointC]
         self._guides = []
         tmp_parent = self._masterguide
         for jnt in self._joints:
@@ -56,24 +46,22 @@ class Finger(basepart.BasePart):
             tmp_parent = gde
 
         self._constraints = []
+        self._aim_constraints = []
         self._utilities = []
 
         self._chain = chain.FKChain(self._name, self._side, self._rig_group, self._joints, constants.BLU)
 
     def create(self):
-        super(Finger, self).create()
+        super(Limb, self).create()
 
         self._jointA.create()
         self._jointB.create()
         self._jointC.create()
-        self._jointD.create()
-        self._jointE.create()
 
     def setup(self):
         self._chain.delete()
 
         self._masterguide.create()
-        self._upguide.create()
 
         aim_choice = choice.Choice(constants.get_name(self._name, constants.CHOICE, constants.AIM, self._side))
         aim_choice.create()
@@ -109,6 +97,8 @@ class Finger(basepart.BasePart):
                 vector_attr.value = vector
                 uti.add_option(vector_attr)
 
+
+
         previous_jnt = None
         for gde, jnt in zip(self._guides, self._joints):
             gde.create()
@@ -120,27 +110,74 @@ class Finger(basepart.BasePart):
             self._constraints.append(cnt)
 
             if previous_jnt:
-                cnt = \
+                acnt = \
                     cmds.aimConstraint(gde.name, previous_jnt.name, aimVector=[1, 0, 0], upVector=[0, 1, 0],
-                                       worldUpType="object",
-                                       worldUpObject=self._upguide.name)[0]
-                self._constraints.append(cnt)
+                                       worldUpType="vector")[0]
+                self._aim_constraints.append(acnt)
 
-                cmds.connectAttr("{0}.{1}".format(aim_choice.name, aim_choice.output.name), "{0}.aimVector".format(cnt))
-                cmds.connectAttr("{0}.{1}".format(up_choice.name, up_choice.output.name), "{0}.upVector".format(cnt))
+                cmds.connectAttr("{0}.{1}".format(aim_choice.name, aim_choice.output.name), "{0}.aimVector".format(acnt))
+                cmds.connectAttr("{0}.{1}".format(up_choice.name, up_choice.output.name), "{0}.upVector".format(acnt))
+
 
             previous_jnt = jnt
 
+        # Plane constraint setup
+        decompose_matrices = []
+        for gde, jnt in zip(self._guides, self._joints):
+            dcm = decompose_matrix.DecomposeMatrix(jnt.name.replace(constants.JOINT, constants.DECOMPOSEMATRIX))
+            dcm.create()
+            dcm.set_input_matrix(gde.name)
+            decompose_matrices.append(dcm)
+
+        AB_vec = plus_minus_average.PlusMinusAverage(constants.get_name(self._name, constants.PLUSMINUSAVERAGE,
+                                                                        "ABVector", self._side))
+        AB_vec.create()
+        #AB_vec.input3D0.source = decompose_matrices[1].outputTranslate
+        #AB_vec.input3D1.source = decompose_matrices[0].outputTranslate
+        cmds.connectAttr("{0}.outputTranslate".format(decompose_matrices[1].name), "{0}.input3D[0]".format(AB_vec.name))
+        cmds.connectAttr("{0}.outputTranslate".format(decompose_matrices[0].name), "{0}.input3D[1]".format(AB_vec.name))
+
+        AB_vec.operation.stringvalue = "Subtract"
+
+        AC_vec = plus_minus_average.PlusMinusAverage(constants.get_name(self._name, constants.PLUSMINUSAVERAGE,
+                                                                        "ACVector", self._side))
+        AC_vec.create()
+        #AC_vec.input3D0.source = decompose_matrices[2].outputTranslate
+        #AC_vec.input3D1.source = decompose_matrices[0].outputTranslate
+
+        cmds.connectAttr("{0}.outputTranslate".format(decompose_matrices[2].name), "{0}.input3D[0]".format(AC_vec.name))
+        cmds.connectAttr("{0}.outputTranslate".format(decompose_matrices[0].name), "{0}.input3D[1]".format(AC_vec.name))
+
+        AC_vec.operation.stringvalue = "Subtract"
+
+        up_vec = vector_product.VectorProduct(constants.get_name(self._name, constants.VECTORPRODUCT,
+                                                                 "UpVector", self._side))
+        up_vec.create()
+        up_vec.input1.source = AB_vec.output3D
+        up_vec.input2.source = AC_vec.output3D
+
+
+
+
+        #cmds.connectAttr("{0}.output3D".format(AB_vec.name), "{0}.input1".format(up_vec.name))
+        #cmds.connectAttr("{0}.output3D".format(AB_vec.name), "{0}.input2".format(up_vec.name))
+
+        up_vec.operation.stringvalue = "Cross Product"
+
+        for cnt in self._aim_constraints:
+
+            cmds.connectAttr("{0}.{1}".format(up_vec.name, up_choice.output.name), "{0}.worldUpVector".format(cnt))
+
     def build(self):
-        for cnt in self._constraints:
+        for cnt, acn in zip(self._constraints, self._aim_constraints):
             cmds.delete(cnt)
+            cmds.delete(acn)
         self._constraints = []
         self._masterguide.delete()
 
         for jnt in self._joints:
             jnt.rot_to_orient()
         self._masterguide.delete()
-        self._upguide.delete()
 
         self._chain.create()
 

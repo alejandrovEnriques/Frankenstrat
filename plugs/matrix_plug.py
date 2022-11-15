@@ -1,7 +1,7 @@
 from maya import cmds
 
 
-class Double(object):
+class Matrix:
 
     def __init__(self, node, name, value=None, source=None, writable=True):
         self._node = node
@@ -46,7 +46,7 @@ class Double(object):
             raise RuntimeError("The plug has an incoming connection from {0}.{1}".format(self._source.node,
                                                                                          self._source.name))
         if cmds.objExists(self._node):
-            self._value = cmds.setAttr("{0}.{1}".format(self._node, self._name), the_value)
+            self._value = cmds.setAttr("{0}.{1}".format(self._node, self._name), the_value, type="matrix")
 
         self._value = the_value
 

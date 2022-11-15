@@ -1,15 +1,20 @@
 import importlib
-
+from maya import cmds
 from Frankenstrat.nodes import transform
 from Frankenstrat import constants
 
 importlib.reload(constants)
+
+
 class BasePart:
 
     def __init__(self, name, side=None, parent=None):
         self._name = name
         self._side = side or ""
         self._parent = parent
+
+        self._created = False
+
         self._group = None
         self._skeleton_group = None
         self._rig_group = None
@@ -30,10 +35,14 @@ class BasePart:
                                                  self._group)
 
     def create(self):
+        if self._created:
+            raise RuntimeError("Part already created")
+
         self._group.create()
         self._skeleton_group.create()
         self._rig_group.create()
         self._guides_group.create()
+        self._created = True
 
     def setup(self):
         pass
