@@ -156,6 +156,9 @@ class Limb(basepart.BasePart):
         up_vec.input1.source = AB_vec.output3D
         up_vec.input2.source = AC_vec.output3D
 
+
+
+
         #cmds.connectAttr("{0}.output3D".format(AB_vec.name), "{0}.input1".format(up_vec.name))
         #cmds.connectAttr("{0}.output3D".format(AB_vec.name), "{0}.input2".format(up_vec.name))
 
